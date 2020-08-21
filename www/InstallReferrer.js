@@ -7,12 +7,13 @@ function getReferrer (success, error) {
 		});
 	}
 
-    exec(function(ref) {
-    	if (ref) {
+    	exec(function(ref) {
+    		if (ref) {
 			var params = [];
+			ref = decodeURIComponent(ref);
 			if (ref.indexOf("&")) {
 				ref.split('&').forEach(function(param) {
-					var key   = param.split('=')[0];
+					var key = param.split('=')[0];
 					var value = param.split('=')[1];
 					params[key] = value;
 				});
@@ -21,13 +22,13 @@ function getReferrer (success, error) {
 				var value = ref.split('=')[1];
 				params[key] = value;
 			}
-    		success(params);
-    	} else {
-    		setTimeout(function() {
-    			getReferrer(success, error)
-    		}, 500);
-    	}
-    }, error, 'InstallReferrer');
+    			success(params);
+    		} else {
+    			setTimeout(function() {
+    				getReferrer(success, error)
+    			}, 500);
+    		}
+    	}, error, 'InstallReferrer');
 }
 
 exports.getReferrer = getReferrer;
