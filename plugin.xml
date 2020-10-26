@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-plugin-installreferrer" version="2.0.0">
-   <name>InstallReferrer</name>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-plugin-installreferrer" version="5.0.0">
+   <name>Install Referrer</name>
 
    <js-module name="InstallReferrer" src="www/InstallReferrer.js">
       <clobbers target="cordova.plugins.InstallReferrer" />
@@ -12,17 +12,14 @@
             <param name="android-package" value="cordova.plugin.installreferrer.InstallReferrer" />
          </feature>
       </config-file>
-      
-      <config-file parent="/*" target="AndroidManifest.xml" />
-      <source-file src="src/android/InstallReferrer.java" target-dir="src/cordova-plugin-installreferrer/InstallReferrer" />
-      <source-file src="src/android/Receiver.java" target-dir="src/cordova-plugin-installreferrer/Receiver" />
 
-	   <config-file target="AndroidManifest.xml" parent="/manifest/application">
-		   <receiver android:exported="true" android:name="cordova.plugin.installreferrer.Receiver">
-            <intent-filter>
-               <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-         </receiver>
-      </config-file>
+      <source-file src="src/android/InstallReferrer.java" target-dir="src/cordova-plugin-installreferrer/InstallReferrer" />
+
+      <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+
+		<!-- Default versions for Gradle dependencies -->
+		<preference name="ANDROID_INSTALLREFERRER" default="2.1" />
+
+		<framework src="com.android.installreferrer:installreferrer:$ANDROID_INSTALLREFERRER" />
    </platform>
 </plugin>

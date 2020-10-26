@@ -1,34 +1,28 @@
-var exec = require('cordova/exec');
+var cordova = require('cordova');
+var pluginName = 'InstallReferrer';
 
-function getReferrer (success, error) {
-	if (!success) {
-		return new Promise(function(resolve, reject) {
-			getReferrer(resolve, reject);
-		});
-	}
+/**
+ * InstallReferrer plugin for Cordova
+ * 
+ * @constructor
+ */
+function InstallReferrer () {}
 
-    	exec(function(ref) {
-    		if (ref) {
-			var params = [];
-			ref = decodeURIComponent(ref);
-			if (ref.indexOf("&")) {
-				ref.split('&').forEach(function(param) {
-					var key = param.split('=')[0];
-					var value = param.split('=')[1];
-					params[key] = value;
-				});
-			} else {
-				var key = ref.split('=')[0];
-				var value = ref.split('=')[1];
-				params[key] = value;
-			}
-    			success(params);
-    		} else {
-    			setTimeout(function() {
-    				getReferrer(success, error)
-    			}, 500);
-    		}
-    	}, error, 'InstallReferrer');
+InstallReferrer.prototype.open = function(successCallback, errorCallback) {
+	cordova.exec(successCallback, errorCallback, pluginName, 'open', []);
 }
 
-exports.getReferrer = getReferrer;
+InstallReferrer.prototype.getParams = function(successCallback, errorCallback) {
+	cordova.exec(successCallback, errorCallback, pluginName, 'getParams', []);
+}
+
+InstallReferrer.prototype.isOpen = function(successCallback, errorCallback) {
+	cordova.exec(successCallback, errorCallback, pluginName, 'isOpen', []);
+}
+
+InstallReferrer.prototype.close = function(successCallback, errorCallback) {
+	cordova.exec(successCallback, errorCallback, pluginName, 'close', []);
+}
+
+// Register the plugin
+module.exports = new InstallReferrer();
