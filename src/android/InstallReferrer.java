@@ -40,46 +40,51 @@ public class InstallReferrer extends CordovaPlugin {
     }
 
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+
         if (action.equals(ACTION_CONNECTION_START)) {
             Context context = this.cordova.getActivity().getApplicationContext();
 
             LOG.d(LOG_TAG, "Attempt initialize client referrer");
 
-            try {
-                referrerClient = InstallReferrerClient.newBuilder(context).build();
-                referrerClient.startConnection(new InstallReferrerStateListener() {
-                    @Override
-                    public void onInstallReferrerSetupFinished(int responseCode) {
-                        switch (responseCode) {
-                            case InstallReferrerResponse.OK:
-                                clientInitialized = true;
-                                LOG.d(LOG_TAG, "Client initialized");
-                                callbackContext.success(1);
-                                break;
-                            case InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
-                                // API not available on the current Play Store app.
-                                clientInitialized = false;
-                                LOG.d(LOG_TAG, "Feature not supported");
-                                handleErrorWithContext("Feature not supported", callbackContext);
-                                break;
-                            case InstallReferrerResponse.SERVICE_UNAVAILABLE:
-                                // Connection couldn't be established.
-                                clientInitialized = false;
-                                LOG.d(LOG_TAG, "Service Unavailable");
-                                handleErrorWithContext("Service Unavailable", callbackContext);
-                                break;
+            if (clientInitialized == false) {
+                try {
+                    referrerClient = InstallReferrerClient.newBuilder(context).build();
+                    referrerClient.startConnection(new InstallReferrerStateListener() {
+                        @Override
+                        public void onInstallReferrerSetupFinished(int responseCode) {
+                            switch (responseCode) {
+                                case InstallReferrerResponse.OK:
+                                    clientInitialized = true;
+                                    LOG.d(LOG_TAG, "Client initialized");
+                                    callbackContext.success(1);
+                                    break;
+                                case InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
+                                    // API not available on the current Play Store app.
+                                    clientInitialized = false;
+                                    LOG.d(LOG_TAG, "Feature not supported");
+                                    handleErrorWithContext("Feature not supported", callbackContext);
+                                    break;
+                                case InstallReferrerResponse.SERVICE_UNAVAILABLE:
+                                    // Connection couldn't be established.
+                                    clientInitialized = false;
+                                    LOG.d(LOG_TAG, "Service Unavailable");
+                                    handleErrorWithContext("Service Unavailable", callbackContext);
+                                    break;
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onInstallReferrerServiceDisconnected() {
-                        // Try to restart the connection on the next request to
-                        // Google Play by calling the startConnection() method.
-                        clientInitialized = false;
-                    }
-                });
-            } catch (Exception e) {
-                handleExceptionWithContext(e, callbackContext);
+                        @Override
+                        public void onInstallReferrerServiceDisconnected() {
+                            // Try to restart the connection on the next request to
+                            // Google Play by calling the startConnection() method.
+                            clientInitialized = false;
+                        }
+                    });
+                } catch (Exception e) {
+                    handleExceptionWithContext(e, callbackContext);
+                }
+            } else {
+                callbackContext.error("Connection already started");
             }
 
             
@@ -118,7 +123,7 @@ public class InstallReferrer extends CordovaPlugin {
         }
 
         else if (action.equals(ACTION_CONNECTION_IS_STARTED)) {
-            callbackContext.success(clientInitialized);
+            callbackContext.success((clientInitialized) ? 1 : 0);
         }
 
         else if (action.equals(ACTION_CONNECTION_END)) {
